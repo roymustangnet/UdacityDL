@@ -11988,7 +11988,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12017,7 +12017,7 @@ les états-unis est parfois occupé en janvier , et il est parfois chaud en nove
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12094,7 +12094,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">model_inputs</span><span class="p">():</span>
@@ -12170,7 +12170,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">process_decoder_input</span><span class="p">(</span><span class="n">target_data</span><span class="p">,</span> <span class="n">target_vocab_to_int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
@@ -12232,7 +12232,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">imp</span> <span class="k">import</span> <span class="n">reload</span>
@@ -12317,7 +12317,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer_train</span><span class="p">(</span><span class="n">encoder_state</span><span class="p">,</span> <span class="n">dec_cell</span><span class="p">,</span> <span class="n">dec_embed_input</span><span class="p">,</span> 
@@ -12396,7 +12396,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer_infer</span><span class="p">(</span><span class="n">encoder_state</span><span class="p">,</span> <span class="n">dec_cell</span><span class="p">,</span> <span class="n">dec_embeddings</span><span class="p">,</span> <span class="n">start_of_sequence_id</span><span class="p">,</span>
@@ -12418,14 +12418,17 @@ strided<em>slice(
 <span class="sd">    :return: BasicDecoderOutput containing inference logits and sample_id</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_tokens</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">([</span><span class="n">start_of_sequence_id</span><span class="p">]),</span> <span class="p">[</span><span class="n">batch_size</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;start_tokens&#39;</span><span class="p">)</span>
-    <span class="n">dropout_cell</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">DropoutWrapper</span><span class="p">(</span><span class="n">dec_cell</span><span class="p">,</span> <span class="n">keep_prob</span><span class="p">)</span>
+    <span class="c1"># 审阅者建议不要在此处添加drop层：</span>
+    <span class="c1"># 这里的函数实现基本是正确的，只是在推断阶段使用dropout可能会影响输出的准确度，</span>
+    <span class="c1"># 而并没有任何好处，因此建议去除此处的dropout。</span>
+<span class="c1">#     dropout_cell = tf.contrib.rnn.DropoutWrapper(dec_cell, keep_prob)</span>
     
     <span class="c1"># TODO: Implement Function</span>
     <span class="n">greedy_embedding_helper</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">GreedyEmbeddingHelper</span><span class="p">(</span><span class="n">dec_embeddings</span><span class="p">,</span> 
                                                                        <span class="n">start_tokens</span><span class="p">,</span>
                                                                        <span class="n">end_of_sequence_id</span><span class="p">)</span>
     
-    <span class="n">decoder</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">BasicDecoder</span><span class="p">(</span><span class="n">cell</span> <span class="o">=</span> <span class="n">dropout_cell</span><span class="p">,</span> 
+    <span class="n">decoder</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">BasicDecoder</span><span class="p">(</span><span class="n">cell</span> <span class="o">=</span> <span class="n">dec_cell</span><span class="p">,</span> 
                                               <span class="n">helper</span> <span class="o">=</span> <span class="n">greedy_embedding_helper</span><span class="p">,</span> 
                                               <span class="n">initial_state</span> <span class="o">=</span> <span class="n">encoder_state</span><span class="p">,</span> 
                                               <span class="n">output_layer</span> <span class="o">=</span> <span class="n">output_layer</span><span class="p">)</span>
@@ -12481,7 +12484,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">decoding_layer</span><span class="p">(</span><span class="n">dec_input</span><span class="p">,</span> <span class="n">encoder_state</span><span class="p">,</span>
@@ -12587,7 +12590,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">seq2seq_model</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">target_data</span><span class="p">,</span> <span class="n">keep_prob</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span>
@@ -12695,7 +12698,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Number of Epochs</span>
@@ -12705,12 +12708,19 @@ strided<em>slice(
 <span class="c1"># RNN Size</span>
 <span class="n">rnn_size</span> <span class="o">=</span> <span class="mi">512</span>
 <span class="c1"># Number of Layers</span>
-<span class="n">num_layers</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># 审阅者的意见：</span>
+<span class="c1"># 网络结构不太合适：这里选用了1层、每层512个LSTM单元的RNN，使得模型有很强的词汇表达能力（最后的全连接输出层），</span>
+<span class="c1"># 但是序列的前后相关能力相对较为匮乏（RNN层）。从过往的情况来看，2层、每层128~256个LSTM单元的RNN，</span>
+<span class="c1"># 比较适合这里使用的数据集，你可以尝试一下看看。</span>
+<span class="n">num_layers</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="c1"># Embedding Size</span>
 <span class="n">encoding_embedding_size</span> <span class="o">=</span> <span class="mi">300</span>
 <span class="n">decoding_embedding_size</span> <span class="o">=</span> <span class="mi">300</span>
 <span class="c1"># Learning Rate</span>
-<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="c1"># 审阅者意见：</span>
+<span class="c1"># 目前选用的学习率稍大，容易导致训练过程波动，影响最后的收敛结果。</span>
+<span class="c1"># 你可以尝试降低learning_rate至0.001，可能能够得到更好的翻译效果。</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
 <span class="c1"># Dropout Keep Probability</span>
 <span class="n">keep_probability</span> <span class="o">=</span> <span class="mf">0.8</span>
 <span class="n">display_step</span> <span class="o">=</span> <span class="mi">100</span>
@@ -12732,7 +12742,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12802,7 +12812,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12855,7 +12865,7 @@ strided<em>slice(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12953,56 +12963,56 @@ strided<em>slice(
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Epoch   0 Batch  100/538 - Train Accuracy: 0.6578, Validation Accuracy: 0.6871, Loss: 0.4925
-Epoch   0 Batch  200/538 - Train Accuracy: 0.8443, Validation Accuracy: 0.8251, Loss: 0.2244
-Epoch   0 Batch  300/538 - Train Accuracy: 0.9141, Validation Accuracy: 0.9283, Loss: 0.0923
-Epoch   0 Batch  400/538 - Train Accuracy: 0.9451, Validation Accuracy: 0.9473, Loss: 0.0512
-Epoch   0 Batch  500/538 - Train Accuracy: 0.9657, Validation Accuracy: 0.9421, Loss: 0.0261
-Epoch   1 Batch  100/538 - Train Accuracy: 0.9719, Validation Accuracy: 0.9640, Loss: 0.0321
-Epoch   1 Batch  200/538 - Train Accuracy: 0.9611, Validation Accuracy: 0.9611, Loss: 0.0234
-Epoch   1 Batch  300/538 - Train Accuracy: 0.9541, Validation Accuracy: 0.9579, Loss: 0.0285
-Epoch   1 Batch  400/538 - Train Accuracy: 0.9648, Validation Accuracy: 0.9629, Loss: 0.0275
-Epoch   1 Batch  500/538 - Train Accuracy: 0.9780, Validation Accuracy: 0.9611, Loss: 0.0200
-Epoch   2 Batch  100/538 - Train Accuracy: 0.9803, Validation Accuracy: 0.9707, Loss: 0.0183
-Epoch   2 Batch  200/538 - Train Accuracy: 0.9797, Validation Accuracy: 0.9599, Loss: 0.0193
-Epoch   2 Batch  300/538 - Train Accuracy: 0.9736, Validation Accuracy: 0.9618, Loss: 0.0254
-Epoch   2 Batch  400/538 - Train Accuracy: 0.9775, Validation Accuracy: 0.9622, Loss: 0.0242
-Epoch   2 Batch  500/538 - Train Accuracy: 0.9824, Validation Accuracy: 0.9625, Loss: 0.0152
-Epoch   3 Batch  100/538 - Train Accuracy: 0.9809, Validation Accuracy: 0.9757, Loss: 0.0214
-Epoch   3 Batch  200/538 - Train Accuracy: 0.9820, Validation Accuracy: 0.9560, Loss: 0.0234
-Epoch   3 Batch  300/538 - Train Accuracy: 0.9643, Validation Accuracy: 0.9624, Loss: 0.0346
-Epoch   3 Batch  400/538 - Train Accuracy: 0.9747, Validation Accuracy: 0.9615, Loss: 0.0274
-Epoch   3 Batch  500/538 - Train Accuracy: 0.9801, Validation Accuracy: 0.9473, Loss: 0.0193
-Epoch   4 Batch  100/538 - Train Accuracy: 0.9859, Validation Accuracy: 0.9785, Loss: 0.0246
-Epoch   4 Batch  200/538 - Train Accuracy: 0.9715, Validation Accuracy: 0.9512, Loss: 0.0169
-Epoch   4 Batch  300/538 - Train Accuracy: 0.9598, Validation Accuracy: 0.9563, Loss: 0.0273
-Epoch   4 Batch  400/538 - Train Accuracy: 0.9751, Validation Accuracy: 0.9522, Loss: 0.0251
-Epoch   4 Batch  500/538 - Train Accuracy: 0.9846, Validation Accuracy: 0.9567, Loss: 0.0175
-Epoch   5 Batch  100/538 - Train Accuracy: 0.9666, Validation Accuracy: 0.9707, Loss: 0.0262
-Epoch   5 Batch  200/538 - Train Accuracy: 0.9691, Validation Accuracy: 0.9547, Loss: 0.0247
-Epoch   5 Batch  300/538 - Train Accuracy: 0.9634, Validation Accuracy: 0.9656, Loss: 0.0291
-Epoch   5 Batch  400/538 - Train Accuracy: 0.9758, Validation Accuracy: 0.9583, Loss: 0.0310
-Epoch   5 Batch  500/538 - Train Accuracy: 0.9728, Validation Accuracy: 0.9508, Loss: 0.0252
-Epoch   6 Batch  100/538 - Train Accuracy: 0.9701, Validation Accuracy: 0.9650, Loss: 0.0254
-Epoch   6 Batch  200/538 - Train Accuracy: 0.9758, Validation Accuracy: 0.9526, Loss: 0.0247
-Epoch   6 Batch  300/538 - Train Accuracy: 0.9505, Validation Accuracy: 0.9593, Loss: 0.0407
-Epoch   6 Batch  400/538 - Train Accuracy: 0.9615, Validation Accuracy: 0.9588, Loss: 0.0352
-Epoch   6 Batch  500/538 - Train Accuracy: 0.9773, Validation Accuracy: 0.9565, Loss: 0.0189
-Epoch   7 Batch  100/538 - Train Accuracy: 0.9662, Validation Accuracy: 0.9627, Loss: 0.0243
-Epoch   7 Batch  200/538 - Train Accuracy: 0.9701, Validation Accuracy: 0.9570, Loss: 0.0244
-Epoch   7 Batch  300/538 - Train Accuracy: 0.9643, Validation Accuracy: 0.9611, Loss: 0.0387
-Epoch   7 Batch  400/538 - Train Accuracy: 0.9645, Validation Accuracy: 0.9526, Loss: 0.0344
-Epoch   7 Batch  500/538 - Train Accuracy: 0.9803, Validation Accuracy: 0.9570, Loss: 0.0259
-Epoch   8 Batch  100/538 - Train Accuracy: 0.9742, Validation Accuracy: 0.9682, Loss: 0.0230
-Epoch   8 Batch  200/538 - Train Accuracy: 0.9787, Validation Accuracy: 0.9640, Loss: 0.0219
-Epoch   8 Batch  300/538 - Train Accuracy: 0.9559, Validation Accuracy: 0.9448, Loss: 0.0360
-Epoch   8 Batch  400/538 - Train Accuracy: 0.9585, Validation Accuracy: 0.9561, Loss: 0.0381
-Epoch   8 Batch  500/538 - Train Accuracy: 0.9814, Validation Accuracy: 0.9574, Loss: 0.0189
-Epoch   9 Batch  100/538 - Train Accuracy: 0.9691, Validation Accuracy: 0.9620, Loss: 0.0303
-Epoch   9 Batch  200/538 - Train Accuracy: 0.9656, Validation Accuracy: 0.9592, Loss: 0.0265
-Epoch   9 Batch  300/538 - Train Accuracy: 0.9494, Validation Accuracy: 0.9441, Loss: 0.0415
-Epoch   9 Batch  400/538 - Train Accuracy: 0.9678, Validation Accuracy: 0.9426, Loss: 0.0341
-Epoch   9 Batch  500/538 - Train Accuracy: 0.9718, Validation Accuracy: 0.9460, Loss: 0.0279
+<pre>Epoch   0 Batch  100/538 - Train Accuracy: 0.4865, Validation Accuracy: 0.5099, Loss: 0.8438
+Epoch   0 Batch  200/538 - Train Accuracy: 0.5973, Validation Accuracy: 0.5982, Loss: 0.6187
+Epoch   0 Batch  300/538 - Train Accuracy: 0.6743, Validation Accuracy: 0.6635, Loss: 0.4491
+Epoch   0 Batch  400/538 - Train Accuracy: 0.8090, Validation Accuracy: 0.8052, Loss: 0.2687
+Epoch   0 Batch  500/538 - Train Accuracy: 0.9167, Validation Accuracy: 0.8825, Loss: 0.1092
+Epoch   1 Batch  100/538 - Train Accuracy: 0.9383, Validation Accuracy: 0.9045, Loss: 0.0693
+Epoch   1 Batch  200/538 - Train Accuracy: 0.9230, Validation Accuracy: 0.9338, Loss: 0.0497
+Epoch   1 Batch  300/538 - Train Accuracy: 0.9386, Validation Accuracy: 0.9455, Loss: 0.0498
+Epoch   1 Batch  400/538 - Train Accuracy: 0.9539, Validation Accuracy: 0.9418, Loss: 0.0443
+Epoch   1 Batch  500/538 - Train Accuracy: 0.9684, Validation Accuracy: 0.9434, Loss: 0.0273
+Epoch   2 Batch  100/538 - Train Accuracy: 0.9797, Validation Accuracy: 0.9600, Loss: 0.0239
+Epoch   2 Batch  200/538 - Train Accuracy: 0.9650, Validation Accuracy: 0.9471, Loss: 0.0231
+Epoch   2 Batch  300/538 - Train Accuracy: 0.9630, Validation Accuracy: 0.9593, Loss: 0.0291
+Epoch   2 Batch  400/538 - Train Accuracy: 0.9741, Validation Accuracy: 0.9673, Loss: 0.0240
+Epoch   2 Batch  500/538 - Train Accuracy: 0.9842, Validation Accuracy: 0.9613, Loss: 0.0158
+Epoch   3 Batch  100/538 - Train Accuracy: 0.9852, Validation Accuracy: 0.9604, Loss: 0.0158
+Epoch   3 Batch  200/538 - Train Accuracy: 0.9732, Validation Accuracy: 0.9622, Loss: 0.0171
+Epoch   3 Batch  300/538 - Train Accuracy: 0.9747, Validation Accuracy: 0.9759, Loss: 0.0188
+Epoch   3 Batch  400/538 - Train Accuracy: 0.9741, Validation Accuracy: 0.9711, Loss: 0.0173
+Epoch   3 Batch  500/538 - Train Accuracy: 0.9886, Validation Accuracy: 0.9739, Loss: 0.0103
+Epoch   4 Batch  100/538 - Train Accuracy: 0.9877, Validation Accuracy: 0.9751, Loss: 0.0127
+Epoch   4 Batch  200/538 - Train Accuracy: 0.9844, Validation Accuracy: 0.9673, Loss: 0.0119
+Epoch   4 Batch  300/538 - Train Accuracy: 0.9829, Validation Accuracy: 0.9796, Loss: 0.0165
+Epoch   4 Batch  400/538 - Train Accuracy: 0.9846, Validation Accuracy: 0.9751, Loss: 0.0137
+Epoch   4 Batch  500/538 - Train Accuracy: 0.9973, Validation Accuracy: 0.9663, Loss: 0.0081
+Epoch   5 Batch  100/538 - Train Accuracy: 0.9928, Validation Accuracy: 0.9721, Loss: 0.0096
+Epoch   5 Batch  200/538 - Train Accuracy: 0.9848, Validation Accuracy: 0.9586, Loss: 0.0114
+Epoch   5 Batch  300/538 - Train Accuracy: 0.9808, Validation Accuracy: 0.9730, Loss: 0.0136
+Epoch   5 Batch  400/538 - Train Accuracy: 0.9842, Validation Accuracy: 0.9812, Loss: 0.0112
+Epoch   5 Batch  500/538 - Train Accuracy: 0.9945, Validation Accuracy: 0.9805, Loss: 0.0081
+Epoch   6 Batch  100/538 - Train Accuracy: 0.9916, Validation Accuracy: 0.9842, Loss: 0.0102
+Epoch   6 Batch  200/538 - Train Accuracy: 0.9887, Validation Accuracy: 0.9585, Loss: 0.0087
+Epoch   6 Batch  300/538 - Train Accuracy: 0.9771, Validation Accuracy: 0.9746, Loss: 0.0112
+Epoch   6 Batch  400/538 - Train Accuracy: 0.9952, Validation Accuracy: 0.9739, Loss: 0.0101
+Epoch   6 Batch  500/538 - Train Accuracy: 0.9945, Validation Accuracy: 0.9677, Loss: 0.0055
+Epoch   7 Batch  100/538 - Train Accuracy: 0.9916, Validation Accuracy: 0.9812, Loss: 0.0076
+Epoch   7 Batch  200/538 - Train Accuracy: 0.9863, Validation Accuracy: 0.9757, Loss: 0.0076
+Epoch   7 Batch  300/538 - Train Accuracy: 0.9907, Validation Accuracy: 0.9686, Loss: 0.0103
+Epoch   7 Batch  400/538 - Train Accuracy: 0.9913, Validation Accuracy: 0.9707, Loss: 0.0066
+Epoch   7 Batch  500/538 - Train Accuracy: 0.9966, Validation Accuracy: 0.9798, Loss: 0.0050
+Epoch   8 Batch  100/538 - Train Accuracy: 0.9918, Validation Accuracy: 0.9810, Loss: 0.0072
+Epoch   8 Batch  200/538 - Train Accuracy: 0.9904, Validation Accuracy: 0.9700, Loss: 0.0072
+Epoch   8 Batch  300/538 - Train Accuracy: 0.9864, Validation Accuracy: 0.9817, Loss: 0.0083
+Epoch   8 Batch  400/538 - Train Accuracy: 0.9892, Validation Accuracy: 0.9840, Loss: 0.0094
+Epoch   8 Batch  500/538 - Train Accuracy: 0.9920, Validation Accuracy: 0.9755, Loss: 0.0054
+Epoch   9 Batch  100/538 - Train Accuracy: 0.9969, Validation Accuracy: 0.9808, Loss: 0.0060
+Epoch   9 Batch  200/538 - Train Accuracy: 0.9902, Validation Accuracy: 0.9790, Loss: 0.0066
+Epoch   9 Batch  300/538 - Train Accuracy: 0.9913, Validation Accuracy: 0.9814, Loss: 0.0091
+Epoch   9 Batch  400/538 - Train Accuracy: 0.9924, Validation Accuracy: 0.9801, Loss: 0.0060
+Epoch   9 Batch  500/538 - Train Accuracy: 0.9938, Validation Accuracy: 0.9817, Loss: 0.0055
 Model Trained and Saved
 </pre>
 </div>
@@ -13023,7 +13033,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -13048,7 +13058,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -13086,7 +13096,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sentence_to_seq</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">vocab_to_int</span><span class="p">):</span>
@@ -13141,7 +13151,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">translate_sentence</span> <span class="o">=</span> <span class="s1">&#39;he saw a old yellow truck .&#39;</span>
@@ -13198,8 +13208,8 @@ Input
   English Words: [&#39;he&#39;, &#39;saw&#39;, &#39;a&#39;, &#39;old&#39;, &#39;yellow&#39;, &#39;truck&#39;, &#39;.&#39;]
 
 Prediction
-  Word Ids:      [87, 166, 289, 155, 189, 109, 239, 126, 1]
-  French Words: il a vu une vieille voiture bleue . &lt;EOS&gt;
+  Word Ids:      [87, 166, 289, 125, 357, 167, 328, 126, 1]
+  French Words: il a vu un vieux camion jaune . &lt;EOS&gt;
 </pre>
 </div>
 </div>

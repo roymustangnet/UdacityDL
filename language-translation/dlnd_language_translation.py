@@ -99,7 +99,7 @@ helper.preprocess_and_save_data(source_path, target_path, text_to_ids)
 # # Check Point
 # This is your first checkpoint. If you ever decide to come back to this notebook or have to restart the notebook, you can start from here. The preprocessed data has been saved to disk.
 
-# In[5]:
+# In[1]:
 
 
 """
@@ -115,7 +115,7 @@ import problem_unittests as tests
 # ### Check the Version of TensorFlow and Access to GPU
 # This will check to make sure you have the correct version of TensorFlow and access to a GPU
 
-# In[6]:
+# In[2]:
 
 
 """
@@ -160,7 +160,7 @@ else:
 # 
 # Return the placeholders in the following the tuple (input, targets, learning rate, keep probability, target sequence length, max target sequence length, source sequence length)
 
-# In[12]:
+# In[3]:
 
 
 def model_inputs():
@@ -204,7 +204,7 @@ tests.test_model_inputs(model_inputs)
 # >    name=None
 # >)
 
-# In[8]:
+# In[4]:
 
 
 def process_decoder_input(target_data, target_vocab_to_int, batch_size):
@@ -233,7 +233,7 @@ tests.test_process_encoding_input(process_decoder_input)
 #  * Construct a [stacked](https://github.com/tensorflow/tensorflow/blob/6947f65a374ebf29e74bb71e36fd82760056d82c/tensorflow/docs_src/tutorials/recurrent.md#stacking-multiple-lstms) [`tf.contrib.rnn.LSTMCell`](https://www.tensorflow.org/api_docs/python/tf/contrib/rnn/LSTMCell) wrapped in a [`tf.contrib.rnn.DropoutWrapper`](https://www.tensorflow.org/api_docs/python/tf/contrib/rnn/DropoutWrapper)
 #  * Pass cell and embedded input to [`tf.nn.dynamic_rnn()`](https://www.tensorflow.org/api_docs/python/tf/nn/dynamic_rnn)
 
-# In[13]:
+# In[5]:
 
 
 from imp import reload
@@ -285,7 +285,7 @@ tests.test_encoding_layer(encoding_layer)
 # * Create a [`tf.contrib.seq2seq.BasicDecoder`](https://www.tensorflow.org/api_docs/python/tf/contrib/seq2seq/BasicDecoder)
 # * Obtain the decoder outputs from [`tf.contrib.seq2seq.dynamic_decode`](https://www.tensorflow.org/api_docs/python/tf/contrib/seq2seq/dynamic_decode)
 
-# In[14]:
+# In[6]:
 
 
 
@@ -332,7 +332,7 @@ tests.test_decoding_layer_train(decoding_layer_train)
 # * Create a [`tf.contrib.seq2seq.BasicDecoder`](https://www.tensorflow.org/api_docs/python/tf/contrib/seq2seq/BasicDecoder)
 # * Obtain the decoder outputs from [`tf.contrib.seq2seq.dynamic_decode`](https://www.tensorflow.org/api_docs/python/tf/contrib/seq2seq/dynamic_decode)
 
-# In[15]:
+# In[7]:
 
 
 def decoding_layer_infer(encoder_state, dec_cell, dec_embeddings, start_of_sequence_id,
@@ -354,14 +354,17 @@ def decoding_layer_infer(encoder_state, dec_cell, dec_embeddings, start_of_seque
     :return: BasicDecoderOutput containing inference logits and sample_id
     """
     start_tokens = tf.tile(tf.constant([start_of_sequence_id]), [batch_size], name='start_tokens')
-    dropout_cell = tf.contrib.rnn.DropoutWrapper(dec_cell, keep_prob)
+    # 审阅者建议不要在此处添加drop层：
+    # 这里的函数实现基本是正确的，只是在推断阶段使用dropout可能会影响输出的准确度，
+    # 而并没有任何好处，因此建议去除此处的dropout。
+#     dropout_cell = tf.contrib.rnn.DropoutWrapper(dec_cell, keep_prob)
     
     # TODO: Implement Function
     greedy_embedding_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(dec_embeddings, 
                                                                        start_tokens,
                                                                        end_of_sequence_id)
     
-    decoder = tf.contrib.seq2seq.BasicDecoder(cell = dropout_cell, 
+    decoder = tf.contrib.seq2seq.BasicDecoder(cell = dec_cell, 
                                               helper = greedy_embedding_helper, 
                                               initial_state = encoder_state, 
                                               output_layer = output_layer)
@@ -386,7 +389,7 @@ tests.test_decoding_layer_infer(decoding_layer_infer)
 # 
 # Note: You'll need to use [tf.variable_scope](https://www.tensorflow.org/api_docs/python/tf/variable_scope) to share variables between training and inference.
 
-# In[16]:
+# In[8]:
 
 
 def decoding_layer(dec_input, encoder_state,
@@ -460,7 +463,7 @@ tests.test_decoding_layer(decoding_layer)
 # - Process target data using your `process_decoder_input(target_data, target_vocab_to_int, batch_size)` function.
 # - Decode the encoded input using your `decoding_layer(dec_input, enc_state, target_sequence_length, max_target_sentence_length, rnn_size, num_layers, target_vocab_to_int, target_vocab_size, batch_size, keep_prob, dec_embedding_size)` function.
 
-# In[17]:
+# In[9]:
 
 
 def seq2seq_model(input_data, target_data, keep_prob, batch_size,
@@ -537,7 +540,7 @@ tests.test_seq2seq_model(seq2seq_model)
 # - Set `keep_probability` to the Dropout keep probability
 # - Set `display_step` to state how many steps between each debug output statement
 
-# In[27]:
+# In[10]:
 
 
 # Number of Epochs
@@ -547,12 +550,19 @@ batch_size = 256
 # RNN Size
 rnn_size = 512
 # Number of Layers
-num_layers = 1
+# 审阅者的意见：
+# 网络结构不太合适：这里选用了1层、每层512个LSTM单元的RNN，使得模型有很强的词汇表达能力（最后的全连接输出层），
+# 但是序列的前后相关能力相对较为匮乏（RNN层）。从过往的情况来看，2层、每层128~256个LSTM单元的RNN，
+# 比较适合这里使用的数据集，你可以尝试一下看看。
+num_layers = 2
 # Embedding Size
 encoding_embedding_size = 300
 decoding_embedding_size = 300
 # Learning Rate
-learning_rate = 0.01
+# 审阅者意见：
+# 目前选用的学习率稍大，容易导致训练过程波动，影响最后的收敛结果。
+# 你可以尝试降低learning_rate至0.001，可能能够得到更好的翻译效果。
+learning_rate = 0.001
 # Dropout Keep Probability
 keep_probability = 0.8
 display_step = 100
@@ -561,7 +571,7 @@ display_step = 100
 # ### Build the Graph
 # Build the graph using the neural network you implemented.
 
-# In[28]:
+# In[11]:
 
 
 """
@@ -617,7 +627,7 @@ with train_graph.as_default():
 
 # Batch and pad the source and target sequences
 
-# In[29]:
+# In[12]:
 
 
 """
@@ -657,7 +667,7 @@ def get_batches(sources, targets, batch_size, source_pad_int, target_pad_int):
 # ### Train
 # Train the neural network on the preprocessed data. If you have a hard time getting a good loss, check the forms to see if anyone is having the same problem.
 
-# In[30]:
+# In[13]:
 
 
 """
@@ -744,7 +754,7 @@ with tf.Session(graph=train_graph) as sess:
 # ### Save Parameters
 # Save the `batch_size` and `save_path` parameters for inference.
 
-# In[31]:
+# In[14]:
 
 
 """
@@ -756,7 +766,7 @@ helper.save_params(save_path)
 
 # # Checkpoint
 
-# In[32]:
+# In[15]:
 
 
 """
@@ -778,7 +788,7 @@ load_path = helper.load_params()
 # - Convert words into ids using `vocab_to_int`
 #  - Convert words not in the vocabulary, to the `<UNK>` word id.
 
-# In[34]:
+# In[16]:
 
 
 def sentence_to_seq(sentence, vocab_to_int):
@@ -802,7 +812,7 @@ tests.test_sentence_to_seq(sentence_to_seq)
 # ## Translate
 # This will translate `translate_sentence` from English to French.
 
-# In[35]:
+# In[17]:
 
 
 translate_sentence = 'he saw a old yellow truck .'
