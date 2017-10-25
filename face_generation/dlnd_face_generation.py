@@ -141,7 +141,7 @@ tests.test_model_inputs(model_inputs)
 # ### Discriminator
 # Implement `discriminator` to create a discriminator neural network that discriminates on `images`.  This function should be able to reuse the variables in the neural network.  Use [`tf.variable_scope`](https://www.tensorflow.org/api_docs/python/tf/variable_scope) with a scope name of "discriminator" to allow the variables to be reused.  The function should return a tuple of (tensor output of the discriminator, tensor logits of the discriminator).
 
-# In[6]:
+# In[27]:
 
 
 def discriminator(images, reuse=False):
@@ -155,18 +155,25 @@ def discriminator(images, reuse=False):
     alpha = 0.2
     with tf.variable_scope('discriminator', reuse=reuse):
         # 第一层，第一层不使用batch_normal
-        conv1 = tf.layers.conv2d(images, 64, 5, strides=2, padding='same')
+        conv1 = tf.layers.conv2d(images, 64, 5, strides=2, padding='same', 
+                                 kernel_initializer=tf.contrib.layers.xavier_initializer())
         leak_relu1 = tf.maximum(conv1 * alpha, conv1)
+        # 评审员建议：在每一层leak relu层后面添加一层dropout
+        drop_out1 = tf.nn.dropout(leak_relu1, keep_prob=0.8)
         
-        conv2 = tf.layers.conv2d(leak_relu1, 128, 5, strides=2, padding='same')
+        conv2 = tf.layers.conv2d(drop_out1, 128, 5, strides=2, padding='same', 
+                                 kernel_initializer=tf.contrib.layers.xavier_initializer())
         batch_normal2 = tf.layers.batch_normalization(conv2, training=True)
         leak_relu2 = tf.maximum(batch_normal2 * alpha, batch_normal2)
+        drop_out2 = tf.nn.dropout(leak_relu2, keep_prob=0.8)
         
-        conv3 = tf.layers.conv2d(leak_relu2, 256, 5, strides=2, padding='same')
+        conv3 = tf.layers.conv2d(drop_out2, 256, 5, strides=2, padding='same', 
+                                 kernel_initializer=tf.contrib.layers.xavier_initializer())
         batch_normal3 = tf.layers.batch_normalization(conv3, training=True)
         leak_relu3 = tf.maximum(batch_normal3 * alpha, batch_normal3)
+        drop_out3 = tf.nn.dropout(leak_relu3, keep_prob=0.8)
         
-        flatten = tf.contrib.layers.flatten(leak_relu3)
+        flatten = tf.contrib.layers.flatten(drop_out3)
         logits = tf.layers.dense(flatten, 1)
         output = tf.sigmoid(logits)
         
@@ -352,7 +359,7 @@ def show_generator_output(sess, n_images, input_z, out_channel_dim, image_mode):
 # 
 # Use the `show_generator_output` to show `generator` output while you train. Running `show_generator_output` for every batch will drastically increase training time and increase the size of the notebook.  It's recommended to print the `generator` output every 100 batches.
 
-# In[18]:
+# In[28]:
 
 
 def train(epoch_count, batch_size, z_dim, learning_rate, beta1, get_batches, data_shape, data_image_mode):
@@ -418,13 +425,18 @@ def train(epoch_count, batch_size, z_dim, learning_rate, beta1, get_batches, dat
 # ### MNIST
 # Test your GANs architecture on MNIST.  After 2 epochs, the GANs should be able to generate images that look like handwritten digits.  Make sure the loss of the generator is lower than the loss of the discriminator or close to 0.
 
-# In[19]:
+# In[34]:
 
 
-batch_size = 128
-z_dim = 100
-learning_rate = 0.0002
-beta1 = 0.5
+# 按照审阅人的意见：
+# 对于MNIST这个数据集来说，图像相对较小，只是28 * 28 的黑白色图形，所以Batch size 设置为32或者64都是可以的。
+batch_size = 64
+z_dim = 128
+# 按照审阅人的意见：
+# 在GAN中，learning rate 设置为0.0002应该不错，但是有些稍微提高一点能够有效地减少你训练的时间（0.001左右）。
+# 经过反复调整，目前觉得0.007的效果比较好
+learning_rate = 0.0007
+beta1 = 0.4
 
 
 """
@@ -441,12 +453,14 @@ with tf.Graph().as_default():
 # ### CelebA
 # Run your GANs on CelebA.  It will take around 20 minutes on the average GPU to run one epoch.  You can run the whole epoch or stop when it starts to generate realistic faces.
 
-# In[24]:
+# In[38]:
 
 
-batch_size = 128
-z_dim = 100
-learning_rate = 0.0002
+# 按照审阅人的意见：
+# 对于celeA这个数据集来说，由于它包含了许多大图像，所以Batch size设置为16或者32比较合适。
+batch_size = 32
+z_dim = 128
+learning_rate = 0.0009
 beta1 = 0.4
 
 
